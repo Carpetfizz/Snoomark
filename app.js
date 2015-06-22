@@ -16,7 +16,7 @@ var mainImage = new Image();
 var waterImage = new Image();
 
 mainImage.crossOrigin="Anonymous";
-mainImage.src="http://i.imgur.com/Ett5UYN.jpg";
+mainImage.src="http://i.imgur.com/XbhuC9S.jpg";
 
 mainImage.onload = function(){
   mWidth = mainImage.width;
