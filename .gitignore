@@ -3,3 +3,9 @@
 
 #Swap
 *.swp
+
+#Sourcemaps
+*.map
+
+#Node Modules
+node_modules

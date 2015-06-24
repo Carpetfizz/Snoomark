@@ -7,21 +7,21 @@
   				margin: 0;
    				font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
    				font-weight: 300;
+   				background-color: #bdc3c7;
 			}
-			img{
-				float: left;
-				margin-left: 0px;
+			.dropbox{
+				width: 100%;
+				height: 100%;
+				z-index: 0;
 			}
-			#canvas-real{
-				display: none;
+			.drop-message{
+				font-size: 24px;
+				text-decoration: bold;
 			}
 		</style>
 	</head>
 	<body>
-		<h1>Snoomark</h1>
-		<p>Following is a proof of concept of the watermark script. This is just a prototype and will be a fully customizable webapp in the coming days. <i>Clicking "Save Image" will generate the full non-scaled image below the existing one. Scroll down if you can't see it. </i><button onClick="saveImage()">Save Image</button></p>
-		<canvas id="canvas"></canvas>
-		<canvas id="canvas-real"></canvas>
-		<script src="app.js"></script>
+		<div id="snoomark"></div>
+		<script src="bundle.js"></script>
 	</body>
 </html>
