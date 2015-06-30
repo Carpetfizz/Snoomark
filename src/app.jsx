@@ -5,10 +5,11 @@
   Snoomark overlays a reddit alient "Snoo" watermark on top of an image. This is an attempt to protect original content from being stolen by other websites.
 */
 
-var React, SMCanvas, SMFileLoader, download;
+var React, SMCanvas, SMFileLoader, SMOptions, download;
 React = require('react');
 SMCanvas = require('../components/SMCanvas.jsx');
 SMFileLoader = require('../components/SMFileLoader.jsx');
+SMOptions = require('../components/SMOptions.jsx');
 download = require('../lib/download.min.js');
 //make sure React is global so that react-dev-tools catches it
 window.React = React;
@@ -21,6 +22,13 @@ var SM = React.createClass({
 				url: "",
 				name: "",
 				type: ""
+			},
+			options: {
+				watermark: "http://i.imgur.com/yN5BhF0.png",
+				text: "/u/carpetfizz",
+				opacity: 0.65,
+				/* 0: top right, 1: bottom right, 2: bottom left, 3: top left, 4: full */ 
+				position: 1
 			}
 		}
 	},
@@ -31,6 +39,9 @@ var SM = React.createClass({
 		nextMainImage.type = type;
 		this.setState({mainImage:nextMainImage});
 		console.log(this.state.mainImage);
+	},
+	setOptions: function(nextOptions){
+		this.setState({options: nextOptions});
 	},
 	canvasOnInit: function(){
 		this.setState({canvasReady: true});
@@ -64,7 +75,8 @@ var SM = React.createClass({
 				<div>
 					<button onClick={this.handleDownloadClick}>Click to download full resolution</button>
 					<button onClick={this.handleClear}>Snoomark another image</button>
-					<SMCanvas ref="smcanvas" onInit={this.canvasOnInit} handleSaveImage={this.handleDownloadImage} mainImageURL={this.state.mainImage.url} mainImageType={this.state.mainImage.type}/>
+					<SMOptions setOptions={this.setOptions} />
+					<SMCanvas ref="smcanvas" onInit={this.canvasOnInit} handleSaveImage={this.handleDownloadImage} mainImageURL={this.state.mainImage.url} mainImageType={this.state.mainImage.type} options={this.state.options}/>
 				</div>
 			)
 		} 

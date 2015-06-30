@@ -10,7 +10,7 @@ var sourcemaps = require('gulp-sourcemaps');
 var assign = require('lodash/object/assign');
 
 var customOpts = {
-	entries: ['./src/app.jsx','./components/SMCanvas.jsx','./components/SMDropper.jsx','./components/SMFileLoader.jsx'],
+	entries: ['./src/app.jsx','./components/SMCanvas.jsx','./components/SMDropper.jsx','./components/SMFileLoader.jsx','./components/SMOptions.jsx'],
 	debug: true
 };
 

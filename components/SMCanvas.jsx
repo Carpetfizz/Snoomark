@@ -16,6 +16,7 @@ var SMCanvas = React.createClass({
 	},
 	initializeCanvas: function(){
 		var nextC, nextCtx, nextCr, nextCtxr, mainImage, nextImage;
+		
 		nextC = React.findDOMNode(this.refs.canvas);
 		nextCtx = nextC.getContext("2d");
 		nextCr = document.createElement("canvas");
@@ -39,33 +40,75 @@ var SMCanvas = React.createClass({
 			nextC.height = newDimensions[1];
 			this.setState({c:nextC, ctx:nextCtx, cr:nextCr, ctxr:nextCtxr});
 			this.placeSnoomark(mWidth, mHeight);
-
 		}.bind(this);
 	},
 	placeSnoomark: function(mWidth, mHeight){
-		var ctxr, waterImage, defaultScale, opacity, wHeight, wWidth,xPos,yPos,text,fontSize,textWidth,textHeight;
+		var ctxr, waterImage, defaultScale, opacity, wHeight, wWidth,xPos,yPos,text,fontSize,textWidth,textHeight,textX, textY;
 
 		ctxr = this.state.ctxr;
 		defaultScale = 0.1;
 		defaultTextScale = 0.25;
-		opacity = 0.65;
-		text="/u/username";
+		defaultPadding = 20;
+		opacity = this.props.options.opacity;
+		text = this.props.options.text;
 		waterImage = new Image();
 		waterImage.crossOrigin = "Anonymous";
-		waterImage.src="http://i.imgur.com/kFdCGh5.png";
+		waterImage.src=this.props.options.watermark;
 
 		waterImage.onload = function(){
+
 			wHeight = mHeight * defaultScale;
 			wWidth = (wHeight*waterImage.width)/waterImage.height;
+			
 			fontSize = wHeight * defaultTextScale;
-			xPos = mWidth - wWidth - 20;
-			yPos = mHeight - wHeight - (fontSize + 15);
-
 			ctxr.fillStyle = "white";
 			ctxr.font = fontSize+"px Verdana";
 			textWidth = ctxr.measureText(text).width;
-			textHeight = ctxr.measureText(text).height;
-			ctxr.fillText(text,mWidth-textWidth-20, mHeight-15);
+			// M's width will give an approx of line height because M is squareish
+			textHeight = ctxr.measureText('M').width;
+			
+			switch(this.props.options.position){
+				case 0:
+					/* Top right */
+					xPos = mWidth - wWidth - defaultPadding;
+					yPos = defaultPadding;
+					textX = mWidth - textWidth - defaultPadding;
+					textY = yPos + wHeight + textHeight + defaultPadding;
+					break;
+				case 1:
+					/* Bottom right */
+					xPos = mWidth - wWidth - defaultPadding;
+					yPos = mHeight - wHeight - (textHeight+defaultPadding);
+					textX = mWidth - textWidth - defaultPadding;
+					textY = yPos + wHeight + textHeight;
+					break;
+				case 2:
+					/* Bottom left */
+					xPos = defaultPadding;
+					yPos = mHeight - wHeight - (textHeight+defaultPadding);
+					textX = defaultPadding;
+					textY = yPos + wHeight + textHeight;
+					break;
+				case 3:
+					/* Top left */
+					xPos = defaultPadding;
+					yPos = defaultPadding;
+					textX = defaultPadding;
+					textY = yPos + wHeight + textHeight + defaultPadding;
+					break;
+				case 4:
+					/* Full cover */
+					opacity = 0.2;
+					wHeight = mHeight * 0.95;
+					wWidth = (wHeight*waterImage.width)/waterImage.height;
+					xPos = (mWidth - wWidth)/2;
+					yPos = (mHeight - wHeight)/2 - (textHeight+defaultPadding);
+					textX = (mWidth - textWidth)/2;
+					textY = yPos + wHeight + textHeight;
+					break;
+			}
+
+			ctxr.fillText(text, textX, textY);
 			
 			ctxr.save();
 			ctxr.globalAlpha = opacity;
