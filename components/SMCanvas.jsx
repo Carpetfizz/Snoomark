@@ -8,15 +8,22 @@ var SMCanvas = React.createClass({
 			ctx: {},
 			cr: {},
 			ctxr: {},
+			mHeight: 0,
+			mWidth: 0,
 			isSaving: false,
 		}
 	},
 	componentDidMount: function(){
 		this.initializeCanvas();
 	},
+	componentWillUnmount: function(){
+		if(this.state.ctxr){
+			this.state.ctxr.clearRect(0,0,this.state.mWidth, this.state.mHeight);
+			this.updateCanvas();
+		}
+	},
 	initializeCanvas: function(){
 		var nextC, nextCtx, nextCr, nextCtxr, mainImage, nextImage;
-		
 		nextC = React.findDOMNode(this.refs.canvas);
 		nextCtx = nextC.getContext("2d");
 		nextCr = document.createElement("canvas");
@@ -38,19 +45,21 @@ var SMCanvas = React.createClass({
 			var newDimensions = this.getCanvasDimensions(mWidth, mHeight);
 			nextC.width = newDimensions[0];
 			nextC.height = newDimensions[1];
-			this.setState({c:nextC, ctx:nextCtx, cr:nextCr, ctxr:nextCtxr});
-			this.placeSnoomark(mWidth, mHeight);
+			this.setState({c:nextC, ctx:nextCtx, cr:nextCr, ctxr:nextCtxr, mHeight: mHeight, mWidth: mWidth});
+			this.placeSnoomark();
 		}.bind(this);
 	},
-	placeSnoomark: function(mWidth, mHeight){
-		var ctxr, waterImage, defaultScale, opacity, wHeight, wWidth,xPos,yPos,text,fontSize,textWidth,textHeight,textX, textY;
-
+	placeSnoomark: function(){
+		var ctxr, waterImage, defaultScale, opacity, wHeight, wWidth,xPos,yPos,text,fontSize,textWidth,textHeight,textX, textY, mHeight, mWidth;
+		mHeight = this.state.mHeight;
+		mWidth = this.state.mWidth;
 		ctxr = this.state.ctxr;
 		defaultScale = 0.1;
 		defaultTextScale = 0.25;
 		defaultPadding = 20;
 		opacity = this.props.options.opacity;
 		text = this.props.options.text;
+		console.log(text);
 		waterImage = new Image();
 		waterImage.crossOrigin = "Anonymous";
 		waterImage.src=this.props.options.watermark;
@@ -109,13 +118,12 @@ var SMCanvas = React.createClass({
 			}
 
 			ctxr.fillText(text, textX, textY);
-			
+
 			ctxr.save();
 			ctxr.globalAlpha = opacity;
 			ctxr.drawImage(waterImage,xPos,yPos,wWidth,wHeight);
 			ctxr.restore();
 			this.updateCanvas();
-			this.props.onInit();
 		}.bind(this);
 	},
 	updateCanvas: function(){

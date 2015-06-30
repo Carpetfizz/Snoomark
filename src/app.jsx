@@ -17,7 +17,6 @@ window.React = React;
 var SM = React.createClass({
 	getInitialState: function(){
 		return {
-			canvasReady: false,
 			mainImage:{
 				url: "",
 				name: "",
@@ -25,11 +24,12 @@ var SM = React.createClass({
 			},
 			options: {
 				watermark: "http://i.imgur.com/yN5BhF0.png",
-				text: "/u/carpetfizz",
+				text: "",
 				opacity: 0.65,
-				/* 0: top right, 1: bottom right, 2: bottom left, 3: top left, 4: full */ 
-				position: 1
-			}
+				/* 0: top right, 1: bottom right, 2: bottom left, 3: top left, 4: fill */ 
+				position: 0
+			},
+			showCanvas: false
 		}
 	},
 	setMainImage: function(url,name,type){
@@ -43,19 +43,14 @@ var SM = React.createClass({
 	setOptions: function(nextOptions){
 		this.setState({options: nextOptions});
 	},
-	canvasOnInit: function(){
-		this.setState({canvasReady: true});
-	},
 	handleDownloadClick: function(){
-		if(this.state.canvasReady){
-			this.refs.smcanvas.saveImage();
-		}
+		this.refs.smcanvas.saveImage();
 	},
 	handleDownloadImage:function(image){
 		download(this.dataURItoBlob(image.src),this.state.mainImage.name,this.state.type);
 	},
-	handleClear: function(){
-		this.setState({mainImage: {}});
+	handleShowCanvas: function(){
+		this.setState({showCanvas: true});
 	},
 	dataURItoBlob: function(uri){
 		/*http://stackoverflow.com/a/15754051/896112*/
@@ -69,14 +64,18 @@ var SM = React.createClass({
     	return new Blob([ab], { type: this.state.type });
 	},
 	render: function(){
-		var content = <SMFileLoader setMainImage={this.setMainImage}/>
-		if(this.state.mainImage.url){
+		var content = (
+			<div>
+				<SMOptions setOptions={this.setOptions}/>
+				<button onClick={this.handleShowCanvas}>Generate Snoomark</button>
+				<SMFileLoader setMainImage={this.setMainImage}/>
+			</div>
+		)
+		if(this.state.showCanvas && this.state.mainImage.url){
 			content = (
 				<div>
 					<button onClick={this.handleDownloadClick}>Click to download full resolution</button>
-					<button onClick={this.handleClear}>Snoomark another image</button>
-					<SMOptions setOptions={this.setOptions} />
-					<SMCanvas ref="smcanvas" onInit={this.canvasOnInit} handleSaveImage={this.handleDownloadImage} mainImageURL={this.state.mainImage.url} mainImageType={this.state.mainImage.type} options={this.state.options}/>
+					<SMCanvas ref="smcanvas" handleSaveImage={this.handleDownloadImage} mainImageURL={this.state.mainImage.url} mainImageType={this.state.mainImage.type} options={this.state.options}/>
 				</div>
 			)
 		} 

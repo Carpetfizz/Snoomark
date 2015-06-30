@@ -9,15 +9,22 @@ var SMCanvas = React.createClass({displayName: "SMCanvas",
 			ctx: {},
 			cr: {},
 			ctxr: {},
+			mHeight: 0,
+			mWidth: 0,
 			isSaving: false,
 		}
 	},
 	componentDidMount: function(){
 		this.initializeCanvas();
 	},
+	componentWillUnmount: function(){
+		if(this.state.ctxr){
+			this.state.ctxr.clearRect(0,0,this.state.mWidth, this.state.mHeight);
+			this.updateCanvas();
+		}
+	},
 	initializeCanvas: function(){
 		var nextC, nextCtx, nextCr, nextCtxr, mainImage, nextImage;
-		
 		nextC = React.findDOMNode(this.refs.canvas);
 		nextCtx = nextC.getContext("2d");
 		nextCr = document.createElement("canvas");
@@ -39,19 +46,21 @@ var SMCanvas = React.createClass({displayName: "SMCanvas",
 			var newDimensions = this.getCanvasDimensions(mWidth, mHeight);
 			nextC.width = newDimensions[0];
 			nextC.height = newDimensions[1];
-			this.setState({c:nextC, ctx:nextCtx, cr:nextCr, ctxr:nextCtxr});
-			this.placeSnoomark(mWidth, mHeight);
+			this.setState({c:nextC, ctx:nextCtx, cr:nextCr, ctxr:nextCtxr, mHeight: mHeight, mWidth: mWidth});
+			this.placeSnoomark();
 		}.bind(this);
 	},
-	placeSnoomark: function(mWidth, mHeight){
-		var ctxr, waterImage, defaultScale, opacity, wHeight, wWidth,xPos,yPos,text,fontSize,textWidth,textHeight,textX, textY;
-
+	placeSnoomark: function(){
+		var ctxr, waterImage, defaultScale, opacity, wHeight, wWidth,xPos,yPos,text,fontSize,textWidth,textHeight,textX, textY, mHeight, mWidth;
+		mHeight = this.state.mHeight;
+		mWidth = this.state.mWidth;
 		ctxr = this.state.ctxr;
 		defaultScale = 0.1;
 		defaultTextScale = 0.25;
 		defaultPadding = 20;
 		opacity = this.props.options.opacity;
 		text = this.props.options.text;
+		console.log(text);
 		waterImage = new Image();
 		waterImage.crossOrigin = "Anonymous";
 		waterImage.src=this.props.options.watermark;
@@ -110,13 +119,12 @@ var SMCanvas = React.createClass({displayName: "SMCanvas",
 			}
 
 			ctxr.fillText(text, textX, textY);
-			
+
 			ctxr.save();
 			ctxr.globalAlpha = opacity;
 			ctxr.drawImage(waterImage,xPos,yPos,wWidth,wHeight);
 			ctxr.restore();
 			this.updateCanvas();
-			this.props.onInit();
 		}.bind(this);
 	},
 	updateCanvas: function(){
@@ -261,9 +269,57 @@ module.exports = SMFileLoader;
 var React = require('react');
 
 var SMOptions = React.createClass({displayName: "SMOptions",
+	getInitialState: function(){
+		return {
+			options: {
+				watermark: "http://i.imgur.com/yN5BhF0.png",
+				text: "",
+				opacity: 0.65,
+				/* 0: top right, 1: bottom right, 2: bottom left, 3: top left, 4: full */ 
+				position: 0
+			}
+		}
+	},
+	setOption: function(value, option){
+		var nextOptions = this.state.options;
+		nextOptions[option] = value;
+		this.setState({options: nextOptions});
+		this.props.setOptions(this.state.options);
+	},
 	render: function(){
 		return (
-			React.createElement("p", null, "Options")
+			React.createElement("div", null, 
+				React.createElement(SMWText, {setOption: this.setOption}), 
+				React.createElement(SMWDropdown, {setOption: this.setOption})
+			)
+		)
+	}
+});
+
+var SMWText = React.createClass({displayName: "SMWText",
+	handleChange: function(e){
+		this.props.setOption(e.target.value, "text");
+	},
+	render: function(){
+		return (
+			React.createElement("input", {type: "text", onChange: this.handleChange})
+		)
+	}
+});
+
+var SMWDropdown = React.createClass({displayName: "SMWDropdown",
+	handleChange: function(e){
+		this.props.setOption(parseInt(e.target.value), "position");
+	},
+	render: function(){
+		return (
+			React.createElement("select", {onChange: this.handleChange}, 
+				React.createElement("option", {value: 0}, "Top Right"), 
+				React.createElement("option", {value: 1}, "Bottom Right"), 
+				React.createElement("option", {value: 2}, "Bottom Left"), 
+				React.createElement("option", {value: 3}, "Top Left"), 
+				React.createElement("option", {value: 4}, "Fill")
+			)
 		)
 	}
 });
@@ -20163,7 +20219,6 @@ window.React = React;
 var SM = React.createClass({displayName: "SM",
 	getInitialState: function(){
 		return {
-			canvasReady: false,
 			mainImage:{
 				url: "",
 				name: "",
@@ -20171,11 +20226,12 @@ var SM = React.createClass({displayName: "SM",
 			},
 			options: {
 				watermark: "http://i.imgur.com/yN5BhF0.png",
-				text: "/u/carpetfizz",
+				text: "",
 				opacity: 0.65,
-				/* 0: top right, 1: bottom right, 2: bottom left, 3: top left, 4: full */ 
-				position: 1
-			}
+				/* 0: top right, 1: bottom right, 2: bottom left, 3: top left, 4: fill */ 
+				position: 0
+			},
+			showCanvas: false
 		}
 	},
 	setMainImage: function(url,name,type){
@@ -20189,19 +20245,14 @@ var SM = React.createClass({displayName: "SM",
 	setOptions: function(nextOptions){
 		this.setState({options: nextOptions});
 	},
-	canvasOnInit: function(){
-		this.setState({canvasReady: true});
-	},
 	handleDownloadClick: function(){
-		if(this.state.canvasReady){
-			this.refs.smcanvas.saveImage();
-		}
+		this.refs.smcanvas.saveImage();
 	},
 	handleDownloadImage:function(image){
 		download(this.dataURItoBlob(image.src),this.state.mainImage.name,this.state.type);
 	},
-	handleClear: function(){
-		this.setState({mainImage: {}});
+	handleShowCanvas: function(){
+		this.setState({showCanvas: true});
 	},
 	dataURItoBlob: function(uri){
 		/*http://stackoverflow.com/a/15754051/896112*/
@@ -20215,14 +20266,18 @@ var SM = React.createClass({displayName: "SM",
     	return new Blob([ab], { type: this.state.type });
 	},
 	render: function(){
-		var content = React.createElement(SMFileLoader, {setMainImage: this.setMainImage})
-		if(this.state.mainImage.url){
+		var content = (
+			React.createElement("div", null, 
+				React.createElement(SMOptions, {setOptions: this.setOptions}), 
+				React.createElement("button", {onClick: this.handleShowCanvas}, "Generate Snoomark"), 
+				React.createElement(SMFileLoader, {setMainImage: this.setMainImage})
+			)
+		)
+		if(this.state.showCanvas && this.state.mainImage.url){
 			content = (
 				React.createElement("div", null, 
 					React.createElement("button", {onClick: this.handleDownloadClick}, "Click to download full resolution"), 
-					React.createElement("button", {onClick: this.handleClear}, "Snoomark another image"), 
-					React.createElement(SMOptions, {setOptions: this.setOptions}), 
-					React.createElement(SMCanvas, {ref: "smcanvas", onInit: this.canvasOnInit, handleSaveImage: this.handleDownloadImage, mainImageURL: this.state.mainImage.url, mainImageType: this.state.mainImage.type, options: this.state.options})
+					React.createElement(SMCanvas, {ref: "smcanvas", handleSaveImage: this.handleDownloadImage, mainImageURL: this.state.mainImage.url, mainImageType: this.state.mainImage.type, options: this.state.options})
 				)
 			)
 		} 
