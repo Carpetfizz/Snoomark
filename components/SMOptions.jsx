@@ -4,13 +4,16 @@ var SMOptions = React.createClass({
 	getInitialState: function(){
 		return {
 			options: {
-				watermark: "http://i.imgur.com/yN5BhF0.png",
+				watermark: "/images/alien.png",
 				text: "",
 				opacity: 0.65,
 				/* 0: top right, 1: bottom right, 2: bottom left, 3: top left, 4: full */ 
 				position: 0
 			}
 		}
+	},
+	componentDidMount: function(){
+		this.props.setOptions(this.state.options);
 	},
 	setOption: function(value, option){
 		var nextOptions = this.state.options;
@@ -21,8 +24,8 @@ var SMOptions = React.createClass({
 	render: function(){
 		return (
 			<div>
-				<SMWText setOption={this.setOption}/>
 				<SMWDropdown setOption={this.setOption}/>
+				<SMWText setOption={this.setOption}/>
 			</div>
 		)
 	}
@@ -34,7 +37,7 @@ var SMWText = React.createClass({
 	},
 	render: function(){
 		return (
-			<input type="text" onChange={this.handleChange}></input>
+			<input className="watermark-text" placeholder="/u/username or /r/subreddit" type="text" onChange={this.handleChange}></input>
 		)
 	}
 });
@@ -45,7 +48,7 @@ var SMWDropdown = React.createClass({
 	},
 	render: function(){
 		return (
-			<select onChange={this.handleChange}>
+			<select className="browser-default" onChange={this.handleChange}>
 				<option value={0}>Top Right</option>
 				<option value={1}>Bottom Right</option>
 				<option value={2}>Bottom Left</option>

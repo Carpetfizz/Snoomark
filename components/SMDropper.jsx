@@ -21,8 +21,14 @@ var SMDropper = React.createClass({
   		this.props.handleFiles(e.dataTransfer.files);
 	},
 	render: function(){
+		var divStyle = {
+		  background: this.props.mainImageURL.length > 0?'url(' + this.props.mainImageURL + ') no-repeat':'#95a5a6',
+		  width: '100%',
+		  height: '100%'
+		};
 		return (
-			<div ref="smdropper" className="dropbox"></div>
+			<div ref="smdropper" style={divStyle} className="dropper">
+			</div>
 		)
 	}
 });

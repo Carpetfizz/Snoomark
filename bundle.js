@@ -51,6 +51,7 @@ var SMCanvas = React.createClass({displayName: "SMCanvas",
 		}.bind(this);
 	},
 	placeSnoomark: function(){
+		console.log(this.props.options);
 		var ctxr, waterImage, defaultScale, opacity, wHeight, wWidth,xPos,yPos,text,fontSize,textWidth,textHeight,textX, textY, mHeight, mWidth;
 		mHeight = this.state.mHeight;
 		mWidth = this.state.mWidth;
@@ -60,13 +61,12 @@ var SMCanvas = React.createClass({displayName: "SMCanvas",
 		defaultPadding = 20;
 		opacity = this.props.options.opacity;
 		text = this.props.options.text;
-		console.log(text);
 		waterImage = new Image();
 		waterImage.crossOrigin = "Anonymous";
 		waterImage.src=this.props.options.watermark;
 
 		waterImage.onload = function(){
-
+			console.log("test");
 			wHeight = mHeight * defaultScale;
 			wWidth = (wHeight*waterImage.width)/waterImage.height;
 			
@@ -187,8 +187,14 @@ var SMDropper = React.createClass({displayName: "SMDropper",
   		this.props.handleFiles(e.dataTransfer.files);
 	},
 	render: function(){
+		var divStyle = {
+		  background: this.props.mainImageURL.length > 0?'url(' + this.props.mainImageURL + ') no-repeat':'#95a5a6',
+		  width: '100%',
+		  height: '100%'
+		};
 		return (
-			React.createElement("div", {ref: "smdropper", className: "dropbox"})
+			React.createElement("div", {ref: "smdropper", style: divStyle, className: "dropper"}
+			)
 		)
 	}
 });
@@ -197,7 +203,6 @@ module.exports = SMDropper;
 
 },{"react":161}],3:[function(require,module,exports){
 var React = require('react');
-var SMDropper = require('../components/SMDropper.jsx');
 
 var SMFileLoader = React.createClass({displayName: "SMFileLoader",
 	getInitialState: function(){
@@ -206,7 +211,7 @@ var SMFileLoader = React.createClass({displayName: "SMFileLoader",
 		}
 	},
 	onFileChange: function(e){
-		this.handleFiles(e.target.files);
+		this.props.handleFiles(e.target.files);
 	},
 	onTextChange: function(e){
 		var inputUrl = e.target.value;
@@ -215,23 +220,6 @@ var SMFileLoader = React.createClass({displayName: "SMFileLoader",
 			this.props.setMainImage(nextImage.url,nextImage.name,nextImage.type);
 		}else{
 			console.error(this.state.errorMessage);
-		}
-	},
-	handleFiles: function(fileList){
-		console.log(fileList);
-		if(fileList.length > 0){
-			var file = fileList[0];
-			/* TEST TIFF */
-			var filePattern = /(image)\/(jpg|jpeg|png)$/i;
-			if(filePattern.test(file.type)){
-				/*http://stackoverflow.com/a/6776055/896112*/
-				var url = URL.createObjectURL(file);
-				this.props.setMainImage(url,file.name,file.type);
-			}else{
-				console.error(this.state.errorMessage);
-			}
-		}else{
-			console.warn("Try inserting the URL or Choose File");
 		}
 	},
 	getImageMetaData: function(url){
@@ -253,10 +241,8 @@ var SMFileLoader = React.createClass({displayName: "SMFileLoader",
 		return (
 			React.createElement("div", null, 
 				React.createElement("form", null, 
-					React.createElement("b", null, React.createElement("span", {className: "drop-message"}, "Drop your image anywhere on the page")), React.createElement("br", null), 
-					React.createElement("input", {type: "file", onChange: this.onFileChange}), React.createElement("br", null), 
 					React.createElement("input", {type: "text", placeholder: "URL", onChange: this.onTextChange}), 
-					React.createElement(SMDropper, {handleFiles: this.handleFiles})
+					React.createElement("input", {type: "file", onChange: this.onFileChange}), React.createElement("br", null)
 				)
 			)
 		);
@@ -265,20 +251,23 @@ var SMFileLoader = React.createClass({displayName: "SMFileLoader",
 
 module.exports = SMFileLoader;
 
-},{"../components/SMDropper.jsx":2,"react":161}],4:[function(require,module,exports){
+},{"react":161}],4:[function(require,module,exports){
 var React = require('react');
 
 var SMOptions = React.createClass({displayName: "SMOptions",
 	getInitialState: function(){
 		return {
 			options: {
-				watermark: "http://i.imgur.com/yN5BhF0.png",
+				watermark: "/images/alien.png",
 				text: "",
 				opacity: 0.65,
 				/* 0: top right, 1: bottom right, 2: bottom left, 3: top left, 4: full */ 
 				position: 0
 			}
 		}
+	},
+	componentDidMount: function(){
+		this.props.setOptions(this.state.options);
 	},
 	setOption: function(value, option){
 		var nextOptions = this.state.options;
@@ -289,8 +278,8 @@ var SMOptions = React.createClass({displayName: "SMOptions",
 	render: function(){
 		return (
 			React.createElement("div", null, 
-				React.createElement(SMWText, {setOption: this.setOption}), 
-				React.createElement(SMWDropdown, {setOption: this.setOption})
+				React.createElement(SMWDropdown, {setOption: this.setOption}), 
+				React.createElement(SMWText, {setOption: this.setOption})
 			)
 		)
 	}
@@ -302,7 +291,7 @@ var SMWText = React.createClass({displayName: "SMWText",
 	},
 	render: function(){
 		return (
-			React.createElement("input", {type: "text", onChange: this.handleChange})
+			React.createElement("input", {className: "watermark-text", placeholder: "/u/username or /r/subreddit", type: "text", onChange: this.handleChange})
 		)
 	}
 });
@@ -313,7 +302,7 @@ var SMWDropdown = React.createClass({displayName: "SMWDropdown",
 	},
 	render: function(){
 		return (
-			React.createElement("select", {onChange: this.handleChange}, 
+			React.createElement("select", {className: "browser-default", onChange: this.handleChange}, 
 				React.createElement("option", {value: 0}, "Top Right"), 
 				React.createElement("option", {value: 1}, "Bottom Right"), 
 				React.createElement("option", {value: 2}, "Bottom Left"), 
@@ -20207,11 +20196,12 @@ module.exports = require('./lib/React');
   Snoomark overlays a reddit alient "Snoo" watermark on top of an image. This is an attempt to protect original content from being stolen by other websites.
 */
 
-var React, SMCanvas, SMFileLoader, SMOptions, download;
+var React, SMCanvas, SMFileLoader, SMOptions, SMDropper, download;
 React = require('react');
 SMCanvas = require('../components/SMCanvas.jsx');
 SMFileLoader = require('../components/SMFileLoader.jsx');
 SMOptions = require('../components/SMOptions.jsx');
+SMDropper = require('../components/SMDropper.jsx');
 download = require('../lib/download.min.js');
 //make sure React is global so that react-dev-tools catches it
 window.React = React;
@@ -20224,14 +20214,25 @@ var SM = React.createClass({displayName: "SM",
 				name: "",
 				type: ""
 			},
-			options: {
-				watermark: "http://i.imgur.com/yN5BhF0.png",
-				text: "",
-				opacity: 0.65,
-				/* 0: top right, 1: bottom right, 2: bottom left, 3: top left, 4: fill */ 
-				position: 0
-			},
+			options: {},
 			showCanvas: false
+		}
+	},
+	handleFiles: function(fileList){
+		console.log(fileList);
+		if(fileList.length > 0){
+			var file = fileList[0];
+			/* TEST TIFF */
+			var filePattern = /(image)\/(jpg|jpeg|png)$/i;
+			if(filePattern.test(file.type)){
+				/*http://stackoverflow.com/a/6776055/896112*/
+				var url = URL.createObjectURL(file);
+				this.setMainImage(url,file.name,file.type);
+			}else{
+				console.error(this.state.errorMessage);
+			}
+		}else{
+			console.warn("Try inserting the URL or Choose File");
 		}
 	},
 	setMainImage: function(url,name,type){
@@ -20251,8 +20252,8 @@ var SM = React.createClass({displayName: "SM",
 	handleDownloadImage:function(image){
 		download(this.dataURItoBlob(image.src),this.state.mainImage.name,this.state.type);
 	},
-	handleShowCanvas: function(){
-		this.setState({showCanvas: true});
+	handleShowCanvas: function(bool){
+		this.setState({showCanvas: bool});
 	},
 	dataURItoBlob: function(uri){
 		/*http://stackoverflow.com/a/15754051/896112*/
@@ -20266,25 +20267,39 @@ var SM = React.createClass({displayName: "SM",
     	return new Blob([ab], { type: this.state.type });
 	},
 	render: function(){
+		var options;
+		if(this.state.mainImage.url){
+			options = (
+				React.createElement("div", {className: "card-action"}, 
+					React.createElement(SMOptions, {setOptions: this.setOptions}), 
+					React.createElement("button", {className: "waves-effect waves-light btn", onClick: this.handleShowCanvas.bind(this, true)}, "Generate Snoomark")
+				)
+			)
+		}
+		var cardImageClass = "hidden";
 		var content = (
-			React.createElement("div", null, 
-				React.createElement(SMOptions, {setOptions: this.setOptions}), 
-				React.createElement("button", {onClick: this.handleShowCanvas}, "Generate Snoomark"), 
-				React.createElement(SMFileLoader, {setMainImage: this.setMainImage})
+			React.createElement("div", {className: "card large"}, 
+				React.createElement("div", {className: "card-content"}, 
+					React.createElement(SMFileLoader, {setMainImage: this.setMainImage, handleFiles: this.handleFiles})
+				), 
+				React.createElement("p", {className: "drop-message"}, "Drop image here"), 
+				React.createElement(SMDropper, {ref: "smdropper", mainImageURL: this.state.mainImage.url?this.state.mainImage.url:"", handleFiles: this.handleFiles}), 
+				options
 			)
 		)
+
 		if(this.state.showCanvas && this.state.mainImage.url){
 			content = (
 				React.createElement("div", null, 
-					React.createElement("button", {onClick: this.handleDownloadClick}, "Click to download full resolution"), 
+					React.createElement("button", {className: "waves-effect waves-light btn", onClick: this.handleDownloadClick}, "Download full resolution"), 
+					React.createElement("button", {className: "waves-effect waves-light btn red-btn", onClick: this.handleShowCanvas.bind(this, false)}, "Snoomark another image"), 
 					React.createElement(SMCanvas, {ref: "smcanvas", handleSaveImage: this.handleDownloadImage, mainImageURL: this.state.mainImage.url, mainImageType: this.state.mainImage.type, options: this.state.options})
 				)
 			)
 		} 
 		return (
-			React.createElement("div", null, 
+			React.createElement("div", {className: "container"}, 
 				React.createElement("h1", null, "Snoomark"), 
-				React.createElement("p", null, "Drag and drop, enter a URL, or choose your image file to Snoomark. Click Download Full Resolution to download your image in its original size"), 
 				content
 			)
 		);
@@ -20293,7 +20308,7 @@ var SM = React.createClass({displayName: "SM",
 
 React.render(React.createElement(SM, null), document.getElementById("snoomark"));
 
-},{"../components/SMCanvas.jsx":1,"../components/SMFileLoader.jsx":3,"../components/SMOptions.jsx":4,"../lib/download.min.js":5,"react":161}]},{},[162,1,2,3,4])
+},{"../components/SMCanvas.jsx":1,"../components/SMDropper.jsx":2,"../components/SMFileLoader.jsx":3,"../components/SMOptions.jsx":4,"../lib/download.min.js":5,"react":161}]},{},[162,1,2,3,4])
 
 
 //# sourceMappingURL=bundle.js.map

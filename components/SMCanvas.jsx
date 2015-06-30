@@ -50,6 +50,7 @@ var SMCanvas = React.createClass({
 		}.bind(this);
 	},
 	placeSnoomark: function(){
+		console.log(this.props.options);
 		var ctxr, waterImage, defaultScale, opacity, wHeight, wWidth,xPos,yPos,text,fontSize,textWidth,textHeight,textX, textY, mHeight, mWidth;
 		mHeight = this.state.mHeight;
 		mWidth = this.state.mWidth;
@@ -59,13 +60,12 @@ var SMCanvas = React.createClass({
 		defaultPadding = 20;
 		opacity = this.props.options.opacity;
 		text = this.props.options.text;
-		console.log(text);
 		waterImage = new Image();
 		waterImage.crossOrigin = "Anonymous";
 		waterImage.src=this.props.options.watermark;
 
 		waterImage.onload = function(){
-
+			console.log("test");
 			wHeight = mHeight * defaultScale;
 			wWidth = (wHeight*waterImage.width)/waterImage.height;
 			

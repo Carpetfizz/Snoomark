@@ -1,0 +1,15 @@
+.hidden {
+	display: none;
+}
+
+.watermark-text{
+	color: white;
+}
+
+.red-btn{
+	background-color: #e74c3c;
+}
+
+.drop-message{
+	margin-left: 15px;
+}
