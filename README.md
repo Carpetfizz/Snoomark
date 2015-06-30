@@ -8,7 +8,7 @@ Watermark your original content with a Snoo before uploading to Reddit.
 - [ ] Write a better user interface, clean up CSS
 - [ ] Add option to choose a different watermark image
 - [ ] Option to upload to Imgur with a button press
-
+- [ ] Fix tab crash when using unusually large files
 
 ## Running a local instance
 
