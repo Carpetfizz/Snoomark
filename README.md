@@ -4,8 +4,9 @@ Watermark your original content with a Snoo before uploading to Reddit.
 
 ## TODO
 
-- [ ] Add customizability for formatting watermark and its text
-- [ ] Add a nicer looking drag and drop interface
+- [x] Add customizability for formatting watermark text
+- [ ] Write a better user interface, clean up CSS
+- [ ] Add option to choose a different watermark image
 - [ ] Option to upload to Imgur with a button press
 
 
