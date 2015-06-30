@@ -89,6 +89,7 @@ var SM = React.createClass({
 		var content = (
 			<div className="card large">
 				<div className="card-content">
+					Drag and drop, enter a URL, or select an image to Snoomark.
 					<SMFileLoader setMainImage={this.setMainImage} handleFiles={this.handleFiles}/>
 				</div>
 				<p className="drop-message">Drop image here</p>

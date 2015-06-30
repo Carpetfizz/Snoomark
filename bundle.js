@@ -20280,6 +20280,7 @@ var SM = React.createClass({displayName: "SM",
 		var content = (
 			React.createElement("div", {className: "card large"}, 
 				React.createElement("div", {className: "card-content"}, 
+					"Drag and drop, enter a URL, or select an image to Snoomark.", 
 					React.createElement(SMFileLoader, {setMainImage: this.setMainImage, handleFiles: this.handleFiles})
 				), 
 				React.createElement("p", {className: "drop-message"}, "Drop image here"), 
