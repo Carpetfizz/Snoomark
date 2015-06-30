@@ -258,7 +258,7 @@ var SMOptions = React.createClass({displayName: "SMOptions",
 	getInitialState: function(){
 		return {
 			options: {
-				watermark: "/images/alien.png",
+				watermark: "http://i.imgur.com/yN5BhF0.png",
 				text: "",
 				opacity: 0.65,
 				/* 0: top right, 1: bottom right, 2: bottom left, 3: top left, 4: full */ 
