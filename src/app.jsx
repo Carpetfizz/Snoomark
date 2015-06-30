@@ -89,7 +89,7 @@ var SM = React.createClass({
 		var content = (
 			<div className="card large">
 				<div className="card-content">
-					Drag and drop, enter a URL, or select an image to Snoomark.
+					<p>Snoomark allows you to protect your original content before posting to reddit. Drag and drop, enter a URL, or select a file to watermark</p>
 					<SMFileLoader setMainImage={this.setMainImage} handleFiles={this.handleFiles}/>
 				</div>
 				<p className="drop-message">Drop image here</p>
@@ -111,6 +111,7 @@ var SM = React.createClass({
 			<div className="container">
 				<h1>Snoomark</h1>
 				{content}
+				<p>REDDIT and the ALIEN Logo are registered trademarks of reddit inc.</p>
 			</div>
 		);
 	}

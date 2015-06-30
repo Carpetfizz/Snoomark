@@ -20280,7 +20280,7 @@ var SM = React.createClass({displayName: "SM",
 		var content = (
 			React.createElement("div", {className: "card large"}, 
 				React.createElement("div", {className: "card-content"}, 
-					"Drag and drop, enter a URL, or select an image to Snoomark.", 
+					React.createElement("p", null, "Snoomark allows you to protect your original content before posting to reddit. Drag and drop, enter a URL, or select a file to watermark"), 
 					React.createElement(SMFileLoader, {setMainImage: this.setMainImage, handleFiles: this.handleFiles})
 				), 
 				React.createElement("p", {className: "drop-message"}, "Drop image here"), 
@@ -20301,7 +20301,8 @@ var SM = React.createClass({displayName: "SM",
 		return (
 			React.createElement("div", {className: "container"}, 
 				React.createElement("h1", null, "Snoomark"), 
-				content
+				content, 
+				React.createElement("p", null, "REDDIT and the ALIEN Logo are registered trademarks of reddit inc.")
 			)
 		);
 	}
