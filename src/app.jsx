@@ -38,7 +38,7 @@ var SM = React.createClass({
 				var url = URL.createObjectURL(file);
 				this.setMainImage(url,file.name,file.type);
 			}else{
-				console.error(this.state.errorMessage);
+				/* Alert wrong file format */
 			}
 		}else{
 			console.warn("Try inserting the URL or Choose File");
