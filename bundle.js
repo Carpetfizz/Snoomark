@@ -20231,6 +20231,7 @@ var SM = React.createClass({displayName: "SM",
 			}else{
 				/* Alert wrong file format */
 				
+
 			}
 		}else{
 			console.warn("Try inserting the URL or Choose File");
