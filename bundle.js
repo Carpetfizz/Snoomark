@@ -20230,6 +20230,7 @@ var SM = React.createClass({displayName: "SM",
 				this.setMainImage(url,file.name,file.type);
 			}else{
 				/* Alert wrong file format */
+				
 			}
 		}else{
 			console.warn("Try inserting the URL or Choose File");
