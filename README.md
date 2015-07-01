@@ -1,7 +1,6 @@
 # Snoomark
 Watermark your original content with a Snoo before uploading to Reddit.
 
-
 ## TODO
 
 - [x] Add customizability for formatting watermark text
