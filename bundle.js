@@ -66,12 +66,11 @@ var SMCanvas = React.createClass({displayName: "SMCanvas",
 		waterImage.src=this.props.options.watermark;
 
 		waterImage.onload = function(){
-			console.log("test");
 			wHeight = mHeight * defaultScale;
 			wWidth = (wHeight*waterImage.width)/waterImage.height;
 			
 			fontSize = wHeight * defaultTextScale;
-			ctxr.fillStyle = "white";
+			ctxr.fillStyle = "#808080";
 			ctxr.font = fontSize+"px Verdana";
 			textWidth = ctxr.measureText(text).width;
 			// M's width will give an approx of line height because M is squareish
@@ -119,7 +118,6 @@ var SMCanvas = React.createClass({displayName: "SMCanvas",
 			}
 
 			ctxr.fillText(text, textX, textY);
-
 			ctxr.save();
 			ctxr.globalAlpha = opacity;
 			ctxr.drawImage(waterImage,xPos,yPos,wWidth,wHeight);
